@@ -3,7 +3,6 @@ const express = require("express");
 const router = express.Router();
 const { User } = require("../database.models.js");
 const axios = require("axios");
-const jwt = require("jsonwebtoken");
 
 // Called when a POST request is served
 router.post("/", async (req, res) => {
@@ -60,19 +59,10 @@ router.post("/", async (req, res) => {
     if(existingUser == null) {
       await User.create({ username });
     }
+    res.status(200).json({ message: "Successfully authenticated" });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
-    return;
   }
-
-  const jwtExpiry = process.env.JWT_EXPIRY;
-
-  const token = jwt.sign({ username }, process.env.JWT_SECRET, {
-    algorithm: "HS256",
-    expiresIn: jwtExpiry
-  });
-
-  res.status(200).cookie("token", token, { maxAge: jwtExpiry * 1000 }).json({ message: "Successfully authenticated" });
 });
 
 // Set the module export to router so it can be used in server.js

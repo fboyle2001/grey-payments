@@ -23,12 +23,12 @@ class LoginForm extends React.Component {
     const { username, password } = this.state;
 
     if(username.length === 0) {
-      this.props.updateMessage("You must enter a username");
+      this.updateMessage("You must enter a username");
       return;
     }
 
     if(password.length === 0) {
-      this.props.updateMessage("You must enter a password");
+      this.updateMessage("You must enter a password");
       return;
     }
 
