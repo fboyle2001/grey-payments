@@ -3,7 +3,9 @@ require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
-const { Users, GymMemberships } = require("./database.models.js");
+const { User, GymMembership } = require("./database.models.js");
+
+const authRoute = require("./routes/auth");
 
 // Load express
 const app = express();
@@ -17,11 +19,11 @@ app.use(cors());
 
 // Initialise the tables
 (async() => {
-  await Users.sync();
-  await GymMemberships.sync();
+  await User.sync();
+  await GymMembership.sync();
 })();
 
-const testRoute = require("./routes/test");
-app.use("/", testRoute);
+app.use("/auth", authRoute);
 
+// Listen for requests on the port specified in the .env file
 app.listen(process.env.EXPRESS_PORT, () => console.log(`Server started on ${process.env.EXPRESS_PORT}`));

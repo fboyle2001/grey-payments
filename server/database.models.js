@@ -8,15 +8,17 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USERNAME, pr
 });
 
 // Define the models representing tables in the database
+// Note that sequelize will pluralise these for us
+// User => users
 
-class Users extends Model {}
-class GymMemberships extends Model {}
+class User extends Model {}
+class GymMembership extends Model {}
 
-// Sequelize will automatically add IDs, createdAt and changedAt
+// Sequelize will automatically add IDs, createdAt and updatedAt
 
 // No need to store a users email it is simply username@durham.ac.uk
 // Wouldn't be difficult to add if it is wanted in the future
-Users.init({
+User.init({
   username: {
     type: DataTypes.STRING,
     allowNull: false
@@ -26,11 +28,11 @@ Users.init({
 // Only need to store the length of membership can derive end date
 // Considered putting this in the Users table but keeping it separate
 // allows for greater expansion of any functionality (e.g. automating the approval process for their cards)
-GymMemberships.init({
+GymMembership.init({
   userId: {
     type: DataTypes.INTEGER,
     references: {
-      model: Users,
+      model: User,
       key: 'id'
     }
   },
@@ -42,7 +44,7 @@ GymMemberships.init({
 
 // Associations are necessary to allow joins between tables
 
-Users.hasMany(GymMemberships, { foreignKey: 'userId' });
-GymMemberships.belongsTo(Users, { foreignKey: 'userId' });
+User.hasMany(GymMembership, { foreignKey: 'userId' });
+GymMembership.belongsTo(User, { foreignKey: 'userId' });
 
-module.exports = { Users, GymMemberships }
+module.exports = { User, GymMembership }
