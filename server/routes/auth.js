@@ -40,7 +40,7 @@ router.post("/", async (req, res) => {
     const status = error.response.status;
 
     if(status === 401) {
-      res.status(400).json({ message: "Incorrect username or password" });
+      res.status(401).json({ message: "Incorrect username or password" });
       return;
     }
 
@@ -52,6 +52,10 @@ router.post("/", async (req, res) => {
   try {
     const existingUser = await User.findOne({ where: { username } });
     // Only create a new entry if one doesn't exist
+    // If we wanted to do something with their details we can get them here
+    // const cisDetailsReq = await axios.get(`https://community.dur.ac.uk/grey.jcr/itsuserdetailsjson.php?username=${username}`);
+    // const cisDetails = cisDetailsReq.data;
+
     if(existingUser == null) {
       await User.create({ username });
     }

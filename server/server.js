@@ -23,7 +23,7 @@ app.use(cors());
   await GymMembership.sync();
 })();
 
-app.use("/auth", authRoute);
+app.use("/api/authenticate", authRoute);
 
 // Listen for requests on the port specified in the .env file
 app.listen(process.env.EXPRESS_PORT, () => console.log(`Server started on ${process.env.EXPRESS_PORT}`));
