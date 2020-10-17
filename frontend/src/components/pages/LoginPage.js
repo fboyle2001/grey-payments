@@ -1,7 +1,10 @@
-import React from 'react'
+import React from 'react';
 import api from '../../utils/axiosConfig.js';
+import authContext from '../../utils/authContext.js';
+import PropTypes from 'prop-types';
 
-import LoginForm from '../login/LoginForm';
+import NavigationBar from '../nav/NavigationBar'
+import LoginForm from '../login/LoginForm'
 
 class LoginPage extends React.Component {
   constructor(props) {
@@ -22,11 +25,14 @@ class LoginPage extends React.Component {
     this.setState({ disabled: true });
 
     try {
-      await api.post('/api/auth/login', { username, password });
+      const response = await api.post('/auth/login', { username, password });
+      console.log("success");
       this.setState({ message: "Logged in" });
+      this.props.loginUser(response.data.user);
     } catch (error) {
       // axios will error if we do not get a 2XX code
       let message;
+      console.log("failure", error);
 
       switch(error.response.status) {
         case 400:
@@ -47,6 +53,7 @@ class LoginPage extends React.Component {
   render () {
     return (
       <React.Fragment>
+        <NavigationBar />
         <h1>Login Page</h1>
         <LoginForm
           disabled={this.state.disabled}
@@ -57,6 +64,10 @@ class LoginPage extends React.Component {
       </React.Fragment>
     );
   }
+}
+
+LoginPage.propTypes = {
+  loginUser: PropTypes.func.isRequired
 }
 
 export default LoginPage;

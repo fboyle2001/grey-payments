@@ -65,7 +65,7 @@ router.post("/login", async (req, res) => {
   // Now assign data for their session
   req.session.user = user.dataValues;
 
-  res.status(200).json({ message: "Successfully authenticated" });
+  res.status(200).json({ user: { username: user.username }, message: "Successfully authenticated" });
 });
 
 router.post("/logout", async (req, res) => {
@@ -75,6 +75,14 @@ router.post("/logout", async (req, res) => {
 
   return res.status(200).json({ message: "User was not logged in" });
 });
+
+router.get("/verify", async (req, res) => {
+  if(req.session.user && req.cookies.user_sid) {
+    return res.status(200).json({ user: req.session.user });
+  }
+
+  return res.status(401).end();
+})
 
 // Set the module export to router so it can be used in server.js
 // Allows it to be assigned as a route
