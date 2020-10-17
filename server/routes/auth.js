@@ -65,7 +65,10 @@ router.post("/login", async (req, res) => {
   // Now assign data for their session
   req.session.user = user.dataValues;
 
-  res.status(200).json({ user: { username: user.username }, message: "Successfully authenticated" });
+  const date = new Date();
+  date.setTime(date.getTime() + (2 * 60 * 1000));
+
+  res.status(200).json({ user: { username: user.username, expires: date }, message: "Successfully authenticated" });
 });
 
 router.post("/logout", async (req, res) => {

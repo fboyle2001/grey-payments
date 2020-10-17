@@ -36,7 +36,29 @@ class App extends React.Component {
   }
 
   isLoggedIn = () => {
-    return this.state.user != null;
+    if(this.state.user === null) {
+      return false;
+    }
+
+    if(!this.state.user.hasOwnProperty("expires")) {
+      this.logoutUser();
+      return false;
+    }
+
+    if(!this.state.user.hasOwnProperty("username")) {
+      this.logoutUser();
+      return false;
+    }
+
+    const currentDate = new Date();
+    const { expires } = this.state.user;
+
+    if(currentDate > expires) {
+      this.logoutUser();
+      return false;
+    }
+
+    return true;
   }
 
   loginUser = (user) => {

@@ -23,13 +23,15 @@ app.use(cookieParser());
 
 // Adapted from https://www.codementor.io/@mayowa.a/how-to-build-a-simple-session-based-authentication-system-with-nodejs-from-scratch-6vn67mcy3
 // sets the settings for the session
+// Be aware that if you change expires you will need to update ./routes/auth.js in the login function
+// 2 hours * 60 seconds * 1000 ms
 app.use(session({
   key: 'user_sid',
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: {
-    expires: 600000
+    expires: 2 * 60 * 1000
   }
 }));
 
