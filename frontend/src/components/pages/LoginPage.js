@@ -1,6 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
-import config from '../../config.json';
 import api from '../../utils/axiosConfig.js';
 
 import LoginForm from '../login/LoginForm';
@@ -24,7 +22,7 @@ class LoginPage extends React.Component {
     this.setState({ disabled: true });
 
     try {
-      await api.post('/api/authenticate', { username, password });
+      await api.post('/api/auth/login', { username, password });
       this.setState({ message: "Logged in" });
     } catch (error) {
       // axios will error if we do not get a 2XX code

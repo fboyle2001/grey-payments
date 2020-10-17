@@ -56,4 +56,10 @@ class LoginForm extends React.Component {
   }
 }
 
+LoginForm.propTypes = {
+  disabled: PropTypes.bool.isRequired,
+  updateMessage: PropTypes.func.isRequired,
+  attemptLogin: PropTypes.func.isRequired
+}
+
 export default LoginForm;
