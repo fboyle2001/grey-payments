@@ -11,13 +11,11 @@ router.post("/", async (req, res) => {
   const password = req.body.password;
 
   if(username == null) {
-    res.status(400).json({ message: "Missing username" });
-    return;
+    return res.status(400).json({ message: "Missing username" });
   }
 
   if(password == null) {
-    res.status(400).json({ message: "Missing password" });
-    return;
+    return res.status(400).json({ message: "Missing password" });
   }
 
   // To validate a Durham account with CIS we need to query a specific page
@@ -40,11 +38,10 @@ router.post("/", async (req, res) => {
     const status = error.response.status;
 
     if(status === 401) {
-      res.status(401).json({ message: "Incorrect username or password" });
-      return;
+      return res.status(401).json({ message: "Incorrect username or password" });
     }
 
-    res.status(status).json({ message: "Validation error" });
+    return res.status(status).json({ message: "Validation error" });
   }
 
   // We will error if we do not receive a 200 status so we can assume we are validated from here
@@ -59,10 +56,12 @@ router.post("/", async (req, res) => {
     if(existingUser == null) {
       await User.create({ username });
     }
-    res.status(200).json({ message: "Successfully authenticated" });
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ message: "Server error" });
   }
+
+  res.status(200).json({ message: "Successfully authenticated" });
+  // Can now issue sessions or tokens
 });
 
 // Set the module export to router so it can be used in server.js
