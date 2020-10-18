@@ -17,9 +17,10 @@ Leave the server and frontend running while developing. Both have hot-reloading 
 Each line consists of a key-value pair of the form 'KEY=VALUE'
 |Key|Value|Explanation|
 |---|-----|-----------|
-|DB_NAME|The name of the database on your system|Used to store the tables for the server|
+|DB_NAME|The name of the database on your system|Used to store the tables for the server, it is advisable to create the database but the tables will be automatically created on first run|
 |DB_USERNAME|Username for an account that can access the database|Details for accessing the database|
 |DB_PASSWORD|Username for an account that can access the database|Details for accessing the database|
 |DB_HOST|The hostname where the database can be accessed|e.g. localhost|
+|DB_DIALECT|mysql/postgre|You will need to refer to https://sequelize.org/v5/manual/dialects.html if you use anything other than mysql|
 |EXPRESS_PORT|Server port|Can use whatever value you want, e.g. 9000|
 |SESSION_SECRET|Used for securing sessions|Can be any string, best to avoid spaces|
