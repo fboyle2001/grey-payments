@@ -1,10 +1,9 @@
 import React from 'react';
-import api from '../../utils/axiosConfig.js';
-import authContext from '../../utils/authContext.js';
 import PropTypes from 'prop-types';
 
-import NavigationBar from '../nav/NavigationBar'
-import LoginForm from '../login/LoginForm'
+import api from '../../utils/axiosConfig.js';
+import NavigationBar from '../nav/NavigationBar';
+import LoginForm from '../login/LoginForm';
 
 class LoginPage extends React.Component {
   constructor(props) {
@@ -26,13 +25,11 @@ class LoginPage extends React.Component {
 
     try {
       const response = await api.post('/auth/login', { username, password });
-      console.log("success");
       this.setState({ message: "Logged in" });
       this.props.loginUser(response.data.user);
     } catch (error) {
       // axios will error if we do not get a 2XX code
       let message;
-      console.log("failure", error);
 
       switch(error.response.status) {
         case 400:

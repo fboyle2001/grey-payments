@@ -3,6 +3,9 @@ import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
 import authContext from './utils/authContext.js';
 
 import LoginPage from './components/pages/LoginPage';
+import LogoutPage from './components/pages/LogoutPage';
+import GymPage from './components/pages/GymPage';
+import NavigationBar from './components/nav/NavigationBar';
 
 import './App.css';
 
@@ -75,9 +78,16 @@ class App extends React.Component {
         <Router>
           <div className="App">
             <div>
+              <Route exact path="/" render={() => (
+                <NavigationBar />
+              )} />
               <Route exact path="/login" render={() => (
-                this.isLoggedIn() ? ( <Redirect to="/" /> ) : ( <LoginPage loginUser={this.loginUser} /> ))
-              } />
+                this.isLoggedIn() ? ( <Redirect to="/" /> ) : ( <LoginPage loginUser={this.loginUser} /> )
+              )} />
+              <Route exact path="/logout" render={() => ( <LogoutPage logoutUser={this.logoutUser} /> )} />
+              <Route exact path="/gym" render={() => (
+                this.isLoggedIn() ? ( <GymPage /> ) : ( <Redirect to="/login" /> )
+              )} />
             </div>
           </div>
         </Router>
