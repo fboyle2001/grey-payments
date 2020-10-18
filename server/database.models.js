@@ -39,12 +39,17 @@ GymMembership.init({
   option: {
     type: DataTypes.INTEGER,
     allowNull: false
+  },
+  approved: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false
   }
 }, { sequelize });
 
 // Associations are necessary to allow joins between tables
 
 User.hasMany(GymMembership, { foreignKey: 'userId' });
-GymMembership.belongsTo(User, { foreignKey: 'userId' });
+GymMembership.belongsTo(User, { foreignKey: 'userId' }); 
 
 module.exports = { User, GymMembership }

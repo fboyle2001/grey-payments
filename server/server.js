@@ -8,6 +8,7 @@ const session = require("express-session");
 const cookieParser = require("cookie-parser");
 
 const authRoute = require("./routes/auth");
+const gymRoute = require("./routes/gym");
 
 // Load express
 const app = express();
@@ -24,14 +25,14 @@ app.use(cookieParser());
 // Adapted from https://www.codementor.io/@mayowa.a/how-to-build-a-simple-session-based-authentication-system-with-nodejs-from-scratch-6vn67mcy3
 // sets the settings for the session
 // Be aware that if you change expires you will need to update ./routes/auth.js in the login function
-// 2 hours * 60 seconds * 1000 ms
+// 2 hours * 60 minutes * 60 seconds * 1000 ms
 app.use(session({
   key: 'user_sid',
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: {
-    expires: 2 * 60 * 1000
+    expires: 2 * 60 * 60 * 1000
   }
 }));
 
@@ -57,12 +58,14 @@ app.use("/api/auth", authRoute);
 // Middleware to check if the user is logged in
 const isLoggedIn = (req, res, next) => {
   if(req.session.user && req.cookies.user_sid) {
-    next();
+    return next();
   }
 
   res.status(401).json({ message: "Not logged in" });
   return;
 };
+
+app.use("/api/gym", isLoggedIn, gymRoute);
 
 // Listen for requests on the port specified in the .env file
 app.listen(process.env.EXPRESS_PORT, () => console.log(`Server started on ${process.env.EXPRESS_PORT}`));

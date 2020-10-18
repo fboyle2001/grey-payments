@@ -66,7 +66,7 @@ router.post("/login", async (req, res) => {
   req.session.user = user.dataValues;
 
   const date = new Date();
-  date.setTime(date.getTime() + (2 * 60 * 1000));
+  date.setTime(date.getTime() + (2 * 60 * 60 * 1000));
 
   res.status(200).json({ user: { username: user.username, expires: date }, message: "Successfully authenticated" });
 });
@@ -81,7 +81,7 @@ router.post("/logout", async (req, res) => {
 
 router.get("/verify", async (req, res) => {
   if(req.session.user && req.cookies.user_sid) {
-    return res.status(200).json({ user: req.session.user });
+    return res.status(200).json({ user: { username: user.username } });
   }
 
   return res.status(401).end();
