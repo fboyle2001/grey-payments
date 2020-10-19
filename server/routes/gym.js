@@ -2,8 +2,8 @@
 const express = require("express");
 const router = express.Router();
 const { User, GymMembership } = require("../database.models.js");
-const stripe = require("stripe")(process.env.STRIPE_SECRET);
-const { v4: uuidv4 } = require("uuid");
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET
 
 router.get("/", async (req, res) => {
   const { user } = req.session;
@@ -11,6 +11,26 @@ router.get("/", async (req, res) => {
   const existingEntries = await GymMembership.findAll({ where: { userId: user.id } });
   res.status(200).json({ existingEntries });
 });
+
+router.post("/webhook", async (req, res) => {
+  const payload = req.body;
+  const signature = req.headers["stripe-signature"];
+
+  let event;
+
+  try {
+    event = stripe.webhooks.constructEvent(payload, signature, endpointSecret);
+  } catch (error) {
+    return res.status(400).json({ message: `Webhook Error ${error.message}` });
+  }
+
+  if(event.type === "checkout.session.completed") {
+    const session = event.data.object;
+    console.log("Order worked", session);
+  }
+
+  res.status(200);
+})
 
 // Called when a POST request is to be served at /api/gym/create_stripe_checkout
 // This will be used to get the user to the Stripe checkout
@@ -73,7 +93,7 @@ router.post("/create_stripe_checkout", async (req, res) => {
       }
     ],
     mode: "payment",
-    success_url: "http://localhost:3000/success",
+    success_url: `http://localhost:3000/success`,
     cancel_url: "http://localhost:3000/failure"
   });
 

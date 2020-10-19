@@ -50,6 +50,6 @@ GymMembership.init({
 // Associations are necessary to allow joins between tables
 
 User.hasMany(GymMembership, { foreignKey: 'userId' });
-GymMembership.belongsTo(User, { foreignKey: 'userId' }); 
+GymMembership.belongsTo(User, { foreignKey: 'userId' });
 
 module.exports = { User, GymMembership }
