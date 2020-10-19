@@ -24,10 +24,11 @@ router.post("/login", async (req, res) => {
 
   const details = Buffer.from(`${username}:${password}`);
   const b64data = details.toString("base64");
-
   const authHeader = `Basic ${b64data}`;
 
   try {
+    // Query the validator and wait for its response.
+    // If we get a non 2XX code it will error and proceed to the catch.
     await axios.get("https://www.dur.ac.uk/its/password/validator", {
       headers: {
         Authorization: authHeader
@@ -47,18 +48,21 @@ router.post("/login", async (req, res) => {
   // We will error if we do not receive a 200 status so we can assume we are validated from here
   // We have no need to store the password (or its hash) so can simply ignore it
   let user;
-  try {
-    user = await User.findOne({ where: { username } });
-    // Only create a new entry if one doesn't exist
-    // If we wanted to do something with their details we can get them here
-    // const cisDetailsReq = await axios.get(`https://community.dur.ac.uk/grey.jcr/itsuserdetailsjson.php?username=${username}`);
-    // const cisDetails = cisDetailsReq.data;
 
-    if(user == null) {
-      user = await User.create({ username });
-    }
+  try {
+    // Only create a new entry if one doesn't exist
+    user = await User.findOne({ where: { username } });
   } catch (error) {
-    return res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ message: "Server error: Unable to find user. Database error." });
+  }
+
+  if(user == null) {
+    try {
+      // Create a new user record
+      user = await User.create({ username });
+    } catch (error) {
+      return res.status(500).json({ message: "Server error: Unable to create a new user. Database error." });
+    }
   }
 
   // Credentials must have been accepted or axios would have errored

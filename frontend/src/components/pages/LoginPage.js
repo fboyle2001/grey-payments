@@ -39,7 +39,8 @@ class LoginPage extends React.Component {
           message = "Login failed. Please check your username and password."
           break;
         default:
-          message = "Server error. Please try again later."
+          // Use the error response message for more consistent debugging
+          message = error.response.data.message;
           break;
       }
 

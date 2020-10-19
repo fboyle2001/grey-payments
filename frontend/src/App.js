@@ -24,7 +24,10 @@ class App extends React.Component {
       }
     }
 
-    this.state = { user };
+    this.state = {
+      user,
+      forceLogout: false
+    };
   }
 
   componentDidUpdate = (oldProps, oldState) => {
@@ -53,8 +56,8 @@ class App extends React.Component {
       return false;
     }
 
-    const currentDate = new Date();
-    const { expires } = this.state.user;
+    const currentDate = new Date().getTime();
+    const expires = this.state.user.expires.getTime();
 
     if(currentDate > expires) {
       this.logoutUser();
@@ -73,6 +76,12 @@ class App extends React.Component {
   }
 
   render() {
+    if(this.state.forceLogout) {
+      return (
+        <Redirect to="/logout" />
+      );
+    }
+    
     return (
       <authContext.Provider value={this.state.user}>
         <Router>

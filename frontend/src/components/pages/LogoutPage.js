@@ -10,7 +10,10 @@ class LogoutPage extends React.Component {
       redirect: false
     }
   }
+
+  // Once the component has loaded we log the user out
   componentDidMount = async () => {
+    // Call to the server to destroy their session
     try {
       await api.post("/auth/logout");
     } catch (error) {
@@ -18,11 +21,13 @@ class LogoutPage extends React.Component {
       return;
     }
 
+    // Amends their authContext to reflect their login state
     this.props.logoutUser();
     this.setState({ redirect: true });
   }
 
   render () {
+    // Redirect once they have been logged out
     if(this.state.redirect) {
       return (
         <Redirect to="/" />

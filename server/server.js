@@ -1,25 +1,25 @@
 // dotenv is used to access environment vars via process.env.<NAME>
 require("dotenv").config();
 
+// These are required for express to work correctly
 const express = require("express");
 const cors = require("cors");
-const { User, GymMembership } = require("./database.models.js");
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
 
+// Routes and database models
+const { User, GymMembership } = require("./database.models.js");
 const authRoute = require("./routes/auth");
 const gymRoute = require("./routes/gym");
 
 // Load express
 const app = express();
 
-// Needed to manage Cross-Origin Resource Sharing
-
 // Tells express to recognise incoming requests as JSON
 app.use(express.json());
 // Manages CORS headers to prevent errors
 app.use(cors());
-
+// Allows express to send and receive cookies
 app.use(cookieParser());
 
 // Adapted from https://www.codementor.io/@mayowa.a/how-to-build-a-simple-session-based-authentication-system-with-nodejs-from-scratch-6vn67mcy3
@@ -57,6 +57,7 @@ app.use("/api/auth", authRoute);
 
 // Middleware to check if the user is logged in
 const isLoggedIn = (req, res, next) => {
+  // They are logged in if they have a valid cookie and the session recognises them
   if(req.session.user && req.cookies.user_sid) {
     return next();
   }

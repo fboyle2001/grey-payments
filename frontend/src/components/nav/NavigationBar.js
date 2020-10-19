@@ -21,7 +21,6 @@ class NavigationBar extends React.Component {
     }
 
     // User is logged out
-
     return (
       <nav>
         <ul>
