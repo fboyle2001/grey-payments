@@ -57,7 +57,7 @@ class App extends React.Component {
     }
 
     const currentDate = new Date().getTime();
-    const expires = this.state.user.expires.getTime();
+    const expires = new Date(this.state.user.expires).getTime();
 
     if(currentDate > expires) {
       this.logoutUser();
@@ -81,7 +81,7 @@ class App extends React.Component {
         <Redirect to="/logout" />
       );
     }
-    
+
     return (
       <authContext.Provider value={this.state.user}>
         <Router>
