@@ -24,3 +24,4 @@ Each line consists of a key-value pair of the form 'KEY=VALUE'
 |DB_DIALECT|mysql/postgre|You will need to refer to https://sequelize.org/v5/manual/dialects.html if you use anything other than mysql|
 |EXPRESS_PORT|Server port|Can use whatever value you want, e.g. 9000|
 |SESSION_SECRET|Used for securing sessions|Can be any string, best to avoid spaces|
+|STRIPE_SECRET|Used by the server to verify with Stripe|Starts with sk_... This should never be published to the repo. Keys starting with pk_... are public and can be published|
