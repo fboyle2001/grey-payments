@@ -1,9 +1,9 @@
 // Get express and the defined models for use in the endpoints
 const express = require("express");
 const router = express.Router();
-const { User, GymMembership } = require("../database.models.js");
+const { User, GymMembership, Transaction, TransactionType } = require("../database.models.js");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
-const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET
+const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET;
 
 router.get("/", async (req, res) => {
   const { user } = req.session;
@@ -12,69 +12,20 @@ router.get("/", async (req, res) => {
   res.status(200).json({ existingEntries });
 });
 
-router.post("/webhook", async (req, res) => {
-  const payload = req.body;
-  const signature = req.headers["stripe-signature"];
-
-  let event;
-
-  try {
-    event = stripe.webhooks.constructEvent(payload, signature, endpointSecret);
-  } catch (error) {
-    return res.status(400).json({ message: `Webhook Error ${error.message}` });
-  }
-
-  if(event.type === "checkout.session.completed") {
-    const session = event.data.object;
-    console.log("Order worked", session);
-  }
-
-  res.status(200);
-})
-
 // Called when a POST request is to be served at /api/gym/create_stripe_checkout
 // This will be used to get the user to the Stripe checkout
 router.post("/create_stripe_checkout", async (req, res) => {
   const { user } = req.session;
-  const rawOption = req.body.option;
 
-  // Validate that the option is an integer and between the required options
-  if(rawOption == null) {
-    return res.status(400).json({ message: "Missing membership option" });
-  }
+  // Create a new Transaction and get its UUID
+  const transaction = await Transaction.create({
+    userId: user.id,
+    type: TransactionType.gymMembership
+  });
 
-  let option;
+  // ** ADD ERROR CHECKING **
 
-  try {
-    option = parseInt(rawOption);
-  } catch (error) {
-    return res.status(400).json({ message: "Expected option to be an integer" });
-  }
-
-  if(!Number.isInteger(option)) {
-    return res.status(400).json({ message: "Expected option to be an integer" });
-  }
-
-  if(option < 0 || option > 2) {
-    return res.status(400).json({ message: "Invalid option selected" });
-  }
-
-  // Stores the names and unit price of each option
-  // Might be worth externalising these to a config or something
-  const membershipOptions = [
-    {
-      name: "1 Term Gym Membership",
-      unit_amount: 3000
-    },
-    {
-      name: "2 Term Gym Membership",
-      unit_amount: 5500
-    },
-    {
-      name: "Full Year Gym Membership",
-      unit_amount: 8000
-    }
-  ];
+  const uuid = transaction.id;
 
   // Connects to Stripe to generate the checkout page
   const session = await stripe.checkout.sessions.create({
@@ -85,15 +36,15 @@ router.post("/create_stripe_checkout", async (req, res) => {
         price_data: {
           currency: "gbp",
           product_data: {
-            name: membershipOptions[option].name
+            name: "Full Year Gym Membership"
           },
-          unit_amount: membershipOptions[option].unit_amount
+          unit_amount: 8000
         },
         quantity: 1
       }
     ],
     mode: "payment",
-    success_url: `http://localhost:3000/success`,
+    success_url: `http://localhost:3000/success?transaction=${uuid}`,
     cancel_url: "http://localhost:3000/failure"
   });
 

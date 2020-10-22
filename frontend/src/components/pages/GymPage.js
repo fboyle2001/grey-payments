@@ -14,18 +14,13 @@ class GymPage extends React.Component {
     super(props);
     this.state = {
       logout: false,
-      existingMemberships: [],
-      membershipOption: 0
+      existingMemberships: []
     };
-  }
-
-  onInputChange = e => {
-    this.setState({ [e.target.name]: e.target.value });
   }
 
   purchaseOption = async (e) => {
     const stripe = await stripePromise;
-    const response = await api.post("/gym/create_stripe_checkout", { option: this.state.membershipOption });
+    const response = await api.post("/gym/create_stripe_checkout");
     const session = await response.data;
 
     const result = await stripe.redirectToCheckout({
@@ -67,17 +62,8 @@ class GymPage extends React.Component {
         <ExistingMembership
           existingMemberships={this.state.existingMemberships}
         />
-        <select
-          name="membershipOption"
-          onChange={this.onInputChange}
-          value={this.state.membershipOption}
-        >
-          <option value="0">1 Term</option>
-          <option value="1">2 Terms</option>
-          <option value="2">Full Year</option>
-        </select>
         <button role="link" onClick={this.purchaseOption}>
-          Checkout
+          Purchase Gym Membership
         </button>
       </React.Fragment>
     )
