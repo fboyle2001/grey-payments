@@ -34,12 +34,8 @@ GymMembership.init({
     type: DataTypes.INTEGER,
     references: {
       model: User,
-      key: 'id'
+      key: 'id' 
     }
-  },
-  option: {
-    type: DataTypes.INTEGER,
-    allowNull: false
   },
   approved: {
     type: DataTypes.BOOLEAN,
@@ -64,7 +60,7 @@ Transaction.init({
     primaryKey: true
   },
   userId: {
-    type: DataTypes.INTEGER, 
+    type: DataTypes.INTEGER,
     references: {
       model: User,
       key: 'id'

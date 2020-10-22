@@ -44,8 +44,8 @@ router.post("/create_stripe_checkout", async (req, res) => {
       }
     ],
     mode: "payment",
-    success_url: `http://localhost:3000/success?transaction=${uuid}`,
-    cancel_url: "http://localhost:3000/failure"
+    success_url: `http://localhost:3000/payments/success/${uuid}`,
+    cancel_url: `http://localhost:3000/payments/failure/${uuid}`
   });
 
   // Sends the session ID back so the user can navigate to the page

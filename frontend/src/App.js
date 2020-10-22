@@ -6,6 +6,8 @@ import LoginPage from './components/pages/LoginPage';
 import LogoutPage from './components/pages/LogoutPage';
 import GymPage from './components/pages/GymPage';
 import NavigationBar from './components/nav/NavigationBar';
+import PaymentSuccessPage from './components/pages/PaymentSuccessPage';
+import PaymentFailurePage from './components/pages/PaymentFailurePage';
 
 import './App.css';
 
@@ -89,6 +91,12 @@ class App extends React.Component {
             <div>
               <Route exact path="/" render={() => (
                 <NavigationBar />
+              )} />
+              <Route exact path="/payments/success/:id" render={(props) => (
+                <PaymentSuccessPage {...props} />
+              )} />
+            <Route exact path="/payments/failure/:id" render={(props) => (
+                <PaymentFailurePage {...props} />
               )} />
               <Route exact path="/login" render={() => (
                 this.isLoggedIn() ? ( <Redirect to="/" /> ) : ( <LoginPage loginUser={this.loginUser} /> )

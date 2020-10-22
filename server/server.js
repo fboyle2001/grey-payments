@@ -11,6 +11,7 @@ const cookieParser = require("cookie-parser");
 const { User, GymMembership, Transaction } = require("./database.models.js");
 const authRoute = require("./routes/auth");
 const gymRoute = require("./routes/gym");
+const paymentsRoute = require("./routes/payments");
 
 // Load express
 const app = express();
@@ -68,6 +69,8 @@ const isLoggedIn = (req, res, next) => {
 };
 
 app.use("/api/gym", isLoggedIn, gymRoute);
+
+app.use("/api/payments", paymentsRoute);
 
 // Listen for requests on the port specified in the .env file
 app.listen(process.env.EXPRESS_PORT, () => console.log(`Server started on ${process.env.EXPRESS_PORT}`));
