@@ -9,7 +9,31 @@ router.get("/", async (req, res) => {
   const { user } = req.session;
 
   const existingEntries = await GymMembership.findAll({ where: { userId: user.id } });
-  res.status(200).json({ existingEntries });
+  return res.status(200).json({ existingEntries });
+});
+
+router.get("/all", async (req, res) => {
+  const { user } = req.session;
+
+  if(!user.admin) {
+    return res.status(403).json({ message: "Admin access only" });
+  }
+
+  let memberships;
+
+  try {
+    memberships = await GymMembership.findAll({
+      include: [ User ],
+      order: [
+        ["createdAt", "DESC"]
+      ]
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Server error: Unable to query database for memberships" });
+  }
+
+  return res.status(200).json({ memberships });
 });
 
 // Called when a POST request is to be served at /api/gym/create_stripe_checkout

@@ -23,6 +23,10 @@ User.init({
   username: {
     type: DataTypes.STRING,
     allowNull: false
+  },
+  admin: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
   }
 }, { sequelize });
 
@@ -34,7 +38,7 @@ GymMembership.init({
     type: DataTypes.INTEGER,
     references: {
       model: User,
-      key: 'id' 
+      key: 'id'
     }
   },
   approved: {

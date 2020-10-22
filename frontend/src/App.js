@@ -1,13 +1,17 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
 import authContext from './utils/authContext.js';
+import api from './utils/axiosConfig.js';
+
+import NavigationBar from './components/nav/NavigationBar';
 
 import LoginPage from './components/pages/LoginPage';
 import LogoutPage from './components/pages/LogoutPage';
 import GymPage from './components/pages/GymPage';
-import NavigationBar from './components/nav/NavigationBar';
 import PaymentSuccessPage from './components/pages/PaymentSuccessPage';
 import PaymentFailurePage from './components/pages/PaymentFailurePage';
+
+import AdminGymPage from './components/admin-pages/AdminGymPage';
 
 import './App.css';
 
@@ -69,6 +73,23 @@ class App extends React.Component {
     return true;
   }
 
+  isAdmin = () => {
+    if(!this.isLoggedIn()) {
+      return false;
+    }
+
+    if(!this.state.user.hasOwnProperty("admin")) {
+      this.logoutUser();
+      return false;
+    }
+
+    if(!this.state.user.admin) {
+      return false;
+    }
+
+    return this.state.user.admin;
+  }
+
   loginUser = (user) => {
     this.setState({ user });
   }
@@ -95,8 +116,11 @@ class App extends React.Component {
               <Route exact path="/payments/success/:id" render={(props) => (
                 <PaymentSuccessPage {...props} />
               )} />
-            <Route exact path="/payments/failure/:id" render={(props) => (
+              <Route exact path="/payments/failure/:id" render={(props) => (
                 <PaymentFailurePage {...props} />
+              )} />
+              <Route exact path="/admin/gym" render={() => (
+                this.isAdmin() ? ( <AdminGymPage /> ) : ( <Redirect to="/" /> )
               )} />
               <Route exact path="/login" render={() => (
                 this.isLoggedIn() ? ( <Redirect to="/" /> ) : ( <LoginPage loginUser={this.loginUser} /> )
