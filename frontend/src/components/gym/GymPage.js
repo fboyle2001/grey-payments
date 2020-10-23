@@ -62,7 +62,10 @@ class GymPage extends React.Component {
       return (
         <React.Fragment>
           <h1>Purchase Gym Membership</h1>
-          <p>Add some stuff about the membership here...</p>
+          <p>Click the button below to purchase a gym membership. You will be redirected to Stripe for payment.</p>
+          <p>Price is £XX.XX and is for a full year of membership.</p>
+          <p>Once you have purchased a membership please allow up to Y days for your card to be activated.</p>
+          <p>You can check the status of your membership by returning to this page after purchase.</p>
           <button role="link" onClick={this.purchaseMembership}>
             Purchase Gym Membership
           </button>

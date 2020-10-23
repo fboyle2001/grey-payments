@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Redirect, Link } from 'react-router-dom';
 
 import api from '../../utils/axiosConfig.js';
 
@@ -18,7 +19,8 @@ class PaymentFinishedPage extends React.Component {
       result: result.toLowerCase(),
       queried: false,
       status: 0,
-      message: ""
+      message: "",
+      type: -1
     };
   }
 
@@ -32,15 +34,23 @@ class PaymentFinishedPage extends React.Component {
       return;
     }
 
-    this.setState({ status: query.status, message: query.data.message, queried: true });
+    this.setState({ status: query.status, message: query.data.message, type: query.data.type, queried: true });
+  }
+
+  lookupType = (type) => {
+    switch(type) {
+      case 0:
+        return "1 Year Gym Membership";
+      case -1:
+      default:
+        return "Unknown";
+    }
   }
 
   render () {
     if(this.state.errors.invalidResult) {
       return (
-        <React.Fragment>
-          <h1>Invalid RESULT</h1>
-        </React.Fragment>
+        <Redirect to="/errors/400" />
       );
     }
 
@@ -53,23 +63,35 @@ class PaymentFinishedPage extends React.Component {
     }
 
     if(this.state.status !== 200) {
-      return (
-        <React.Fragment>
-          <h1>Non-200 Code {this.state.status}</h1>
-        </React.Fragment>
-      );
+      switch(this.state.status) {
+        case 400:
+          return (
+            <React.Fragment>
+              <h1>Transaction Completed</h1>
+              <p>This transaction has already been completed.</p>
+              <Link to="/">Click here to return to the home page</Link>
+            </React.Fragment>
+          );
+        case 500:
+        default:
+          return (
+            <Redirect to="/errors/500" />
+          );
+      }
     }
 
     if(this.state.result === "failure") {
       return (
         <React.Fragment>
           <h1>Payment Failed</h1>
+          <p>The transaction was cancelled. Please try again. Payment was not taken.</p>
         </React.Fragment>
       )
     } else if (this.state.result === "success") {
       return (
         <React.Fragment>
           <h1>Payment Successful</h1>
+          <p>You have successfully purchased a {this.lookupType(this.state.type)}!</p>
         </React.Fragment>
       )
     }

@@ -138,7 +138,7 @@ router.post("/success", async (req, res) => {
     return res.status(500).json({ message: "Server error: Unable to update transaction" });
   }
 
-  return res.status(200).json({ message: "Transaction completed" });
+  return res.status(200).json({ message: "Transaction completed", type: transaction.type });
 });
 
 createNewGymMembership = async (userId) => {

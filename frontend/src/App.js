@@ -8,6 +8,7 @@ import LoginPage from './components/accounts/LoginPage';
 import LogoutPage from './components/accounts/LogoutPage';
 import GymPage from './components/gym/GymPage';
 import PaymentFinishedPage from './components/payment/PaymentFinishedPage';
+import ErrorPage from './components/errors/ErrorPage';
 
 import AdminGymPage from './components/gym/admin/AdminGymPage';
 
@@ -154,12 +155,18 @@ class App extends React.Component {
                 <Route exact path="/admin/gym" render={() => (
                   this.isAdmin() ? ( <AdminGymPage /> ) : ( <Redirect to="/" /> )
                 )} />
-                <Route exact path="/login" render={() => (
+                <Route exact path="/accounts/login" render={() => (
                   this.isLoggedIn() ? ( <Redirect to="/" /> ) : ( <LoginPage loginUser={this.loginUser} /> )
                 )} />
-                <Route exact path="/logout" render={() => ( <LogoutPage logoutUser={this.logoutUser} /> )} />
+                <Route exact path="/accounts/logout" render={() => ( <LogoutPage logoutUser={this.logoutUser} /> )} />
                 <Route exact path="/gym" render={() => (
                   this.isLoggedIn() ? ( <GymPage /> ) : ( <Redirect to="/login" /> )
+                )} />
+                <Route exact path="/errors/:code" render={(props) => (
+                  <ErrorPage {...props} />
+                )} />
+                <Route render={() => (
+                  <ErrorPage code="404" />
                 )} />
               </Switch>
             </div>
