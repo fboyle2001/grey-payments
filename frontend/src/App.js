@@ -4,12 +4,12 @@ import authContext from './utils/authContext.js';
 
 import NavigationBar from './components/nav/NavigationBar';
 
-import LoginPage from './components/pages/LoginPage';
-import LogoutPage from './components/pages/LogoutPage';
-import GymPage from './components/pages/GymPage';
-import PaymentFinishedPage from './components/pages/PaymentFinishedPage';
+import LoginPage from './components/accounts/LoginPage';
+import LogoutPage from './components/accounts/LogoutPage';
+import GymPage from './components/gym/GymPage';
+import PaymentFinishedPage from './components/payment/PaymentFinishedPage';
 
-import AdminGymPage from './components/admin-pages/AdminGymPage';
+import AdminGymPage from './components/gym/admin/AdminGymPage';
 
 import './App.css';
 

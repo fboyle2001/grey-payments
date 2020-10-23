@@ -22,7 +22,7 @@ router.get("/all", async (req, res) => {
   const { user } = req.session;
 
   if(!user.admin) {
-    return res.status(403).json({ message: "Admin access only" });
+    return res.status(403).json({ message: "You do not have permission to perform this action" });
   }
 
   let memberships;
@@ -40,6 +40,58 @@ router.get("/all", async (req, res) => {
   }
 
   return res.status(200).json({ memberships });
+});
+
+router.post("/approve", async(req, res) => {
+  const { user } = req.session;
+
+  if(!user.admin) {
+    return res.status(403).json({ message: "You do not have permission to perform this action" });
+  }
+
+  const rawId = req.body.id;
+
+  if(rawId === null) {
+    return res.status(400).json({ message: "Missing id" });
+  }
+
+  let id;
+
+  try {
+    id = parseInt(rawId);
+  } catch (error) {
+    return res.status(400).json({ message: "Expected id to be an integer (1)" });
+  }
+
+  if(!Number.isInteger(id)) {
+    return res.status(400).json({ message: "Expected id to be an integer (2)" });
+  }
+
+  if(id < 0) {
+    return res.status(400).json({ message: "Expected id to be positive" });
+  }
+
+  let membership;
+
+  try {
+    membership = await GymMembership.findOne({ where: { id }});
+  } catch (error) {
+    return res.status(500).json({ message: "Server error: Unable to connect to the database to get membership" });
+  }
+
+  if(membership === null) {
+    return res.status(400).json({ message: "id does not correspond to a membership" });
+  }
+
+  membership.approved = true;
+
+  try {
+    await membership.save();
+  } catch (error) {
+    return res.status(500).json({ message: "Server error: Unable to connect to the database to save membership" });
+  }
+
+  return res.status(200).json({ message: "Successfully approved" });
 });
 
 // Called when a POST request is to be served at /api/gym/create_stripe_checkout

@@ -1,9 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import api from '../../utils/axiosConfig.js';
-import NavigationBar from '../nav/NavigationBar';
-import LoginForm from '../login/LoginForm';
+import api from '../../utils/axiosConfig';
+import LoginForm from './LoginForm';
 
 class LoginPage extends React.Component {
   constructor(props) {

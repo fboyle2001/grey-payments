@@ -1,38 +1,49 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import api from '../../utils/axiosConfig';
+import api from '../../../utils/axiosConfig';
+import ApprovalButton from './ApprovalButton';
 
 class AdminGymPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      ready: false,
+      queried: false,
+      status: 0,
+      message: "",
       memberships: []
     };
   }
+
   componentDidMount = async () => {
     let query;
 
     try {
       query = await api.get("/gym/all");
     } catch (error) {
-      console.log(error);
-      // Handle this better
+      this.setState({ status: error.response.status, message: error.response.data.message, queried: true });
       return;
     }
 
     const memberships = query.data.memberships;
 
-    this.setState({ ready: true, memberships });
+    this.setState({ queried: true, status: query.status, memberships });
   }
 
   render () {
-    if(!this.state.ready) {
+    if(!this.state.queried) {
       return (
         <React.Fragment>
-          <h1>View Gym Memberships</h1>
+          <h1>Loading...</h1>
         </React.Fragment>
-      )
+      );
+    }
+
+    if(this.state.status !== 200) {
+      return (
+        <React.Fragment>
+          <h1>Non-200 Status {this.state.status}</h1>
+        </React.Fragment>
+      );
     }
 
     return (
@@ -44,6 +55,7 @@ class AdminGymPage extends React.Component {
               <th>Username</th>
               <th>Purchase Time</th>
               <th>Approved</th>
+              <th>Approve Membership</th>
             </tr>
           </thead>
           <tbody>
@@ -53,6 +65,7 @@ class AdminGymPage extends React.Component {
                   <td>{membership.User.username}</td>
                   <td>{membership.createdAt}</td>
                   <td>{membership.approved ? "Yes" : "No"}</td>
+                  <td><ApprovalButton id={membership.id} approved={membership.approved} /></td>
                 </tr>
               ))
             }

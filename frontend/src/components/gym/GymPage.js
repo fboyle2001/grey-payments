@@ -37,14 +37,9 @@ class GymPage extends React.Component {
     try {
       existing = await api.get("/gym");
     } catch (error) {
-      if(error.response.status === 401) {
-        console.log("Handle this");
-      }
+      this.setState({ status: error.response.status, message: error.response.data.message, queried: true });
       return;
     }
-
-    console.log(existing);
-    console.log(existing.data.hasMembership);
 
     if(!existing.data.hasMembership) {
       this.setState({ loaded: true, hasMembership: false });
