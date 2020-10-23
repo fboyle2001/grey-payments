@@ -1,7 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
 import authContext from './utils/authContext.js';
-import api from './utils/axiosConfig.js';
 
 import NavigationBar from './components/nav/NavigationBar';
 
@@ -18,14 +17,15 @@ import './App.css';
 class App extends React.Component {
   constructor(props) {
     super(props);
-    const storedUser = localStorage.getItem("user");
+    // We store the authContext user in local storage
+    // Retrieve it and parse it
+    const storedUserState = localStorage.getItem("user");
     let user = null;
 
-    if(storedUser !== null) {
+    if(storedUserState !== null) {
       try {
-        user = JSON.parse(storedUser);
+        user = JSON.parse(storedUserState);
       } catch (error) {
-        console.log(error);
         user = null;
       }
     }
@@ -36,7 +36,19 @@ class App extends React.Component {
     };
   }
 
+  /*
+  * Important to note that all of these functions are client side
+  * hence local storage etc are able to be modified. These functions
+  * should solely be used to alter things like the navigation bar
+  * rather than relied on to check if the user really has permission to
+  * access data!
+  *
+  * Instead the server MUST check on every request (via the session stored
+  * server side) whether the user has the correct permissions.
+  */
+
   componentDidUpdate = (oldProps, oldState) => {
+    // Updates the local storage with the user info when it is changed
     if(this.state.user !== oldState.user) {
       if(this.state.user === null) {
         localStorage.setItem("user", null);
@@ -47,26 +59,34 @@ class App extends React.Component {
     }
   }
 
-  isLoggedIn = () => {
+  hasLoginExpired = () => {
+    // Check if the login session has expired
     if(this.state.user === null) {
-      return false;
-    }
-
-    if(!this.state.user.hasOwnProperty("expires")) {
-      this.logoutUser();
-      return false;
-    }
-
-    if(!this.state.user.hasOwnProperty("username")) {
-      this.logoutUser();
       return false;
     }
 
     const currentDate = new Date().getTime();
     const expires = new Date(this.state.user.expires).getTime();
 
-    if(currentDate > expires) {
-      this.logoutUser();
+    return currentDate > expires;
+  }
+
+  isLoggedIn = () => {
+    // Check if the user is logged in
+    // Perform basic checks on the user if it is clearly modified
+    if(this.state.user === null) {
+      return false;
+    }
+
+    if(!this.state.user.hasOwnProperty("expires")) {
+      return false;
+    }
+
+    if(!this.state.user.hasOwnProperty("username")) {
+      return false;
+    }
+
+    if(this.hasLoginExpired()) {
       return false;
     }
 
@@ -79,11 +99,6 @@ class App extends React.Component {
     }
 
     if(!this.state.user.hasOwnProperty("admin")) {
-      this.logoutUser();
-      return false;
-    }
-
-    if(!this.state.user.admin) {
       return false;
     }
 
@@ -98,10 +113,29 @@ class App extends React.Component {
     this.setState({ user: null });
   }
 
-  render() {
+  forceLogout = () => {
+    this.setState({ forceLogout: true });
+    this.logoutUser();
+  }
+
+  componentDidMount = () => {
+    if(this.state.user !== null) {
+      if(!this.isLoggedIn()) {
+        // This is to make things consistent with the server
+        // essentially acts as a reset if the user modifies their state heavily
+        this.forceLogout();
+      }
+    }
+  }
+
+  render () {
     if(this.state.forceLogout) {
       return (
-        <Redirect to="/logout" />
+        <authContext.Provider value={this.state.user}>
+          <Router>
+            <Redirect to="/logout" />
+          </Router>
+        </authContext.Provider>
       );
     }
 
