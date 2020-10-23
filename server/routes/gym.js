@@ -4,6 +4,7 @@ const router = express.Router();
 const { User, GymMembership, Transaction, TransactionType } = require("../database.models.js");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET;
+const jwt = require("jsonwebtoken");
 
 router.get("/", async (req, res) => {
   const { user } = req.session;
@@ -56,6 +57,25 @@ router.post("/create_stripe_checkout", async (req, res) => {
 
   const uuid = transaction.id;
 
+  // We sign the success and failure tokens in JWTs
+  // this is needed to prevent them taking the UUID and navigating to
+  // success page if their payment actually failed
+
+  const jwtExpiry = process.env.JWT_EXPIRY;
+
+  const successJWT = jwt.sign({ transactionId: uuid, success: true }, process.env.JWT_SECRET, {
+    algorithm: "HS256",
+    expiresIn: jwtExpiry
+  });
+
+  const failureJWT = jwt.sign({ transactionId: uuid, success: false }, process.env.JWT_SECRET, {
+    algorithm: "HS256",
+    expiresIn: jwtExpiry
+  });
+
+  console.log("success", successJWT);
+  console.log("failure", failureJWT);
+
   // Connects to Stripe to generate the checkout page
   const session = await stripe.checkout.sessions.create({
     customer_email: `${user.username}@durham.ac.uk`,
@@ -73,8 +93,8 @@ router.post("/create_stripe_checkout", async (req, res) => {
       }
     ],
     mode: "payment",
-    success_url: `http://localhost:3000/payments/success/${uuid}`,
-    cancel_url: `http://localhost:3000/payments/failure/${uuid}`
+    success_url: `${process.env.WEB_ADDRESS}/payments/success/${successJWT}`,
+    cancel_url: `${process.env.WEB_ADDRESS}/payments/failure/${failureJWT}`
   });
 
   // Sends the session ID back so the user can navigate to the page

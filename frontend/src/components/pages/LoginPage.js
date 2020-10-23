@@ -51,7 +51,6 @@ class LoginPage extends React.Component {
   render () {
     return (
       <React.Fragment>
-        <NavigationBar />
         <h1>Login Page</h1>
         <LoginForm
           disabled={this.state.disabled}

@@ -7,8 +7,7 @@ import NavigationBar from './components/nav/NavigationBar';
 import LoginPage from './components/pages/LoginPage';
 import LogoutPage from './components/pages/LogoutPage';
 import GymPage from './components/pages/GymPage';
-import PaymentSuccessPage from './components/pages/PaymentSuccessPage';
-import PaymentFailurePage from './components/pages/PaymentFailurePage';
+import PaymentFinishedPage from './components/pages/PaymentFinishedPage';
 
 import AdminGymPage from './components/admin-pages/AdminGymPage';
 
@@ -149,11 +148,8 @@ class App extends React.Component {
                 <Route exact path="/" render={() => (
                   <h1>Homepage</h1>
                 )} />
-                <Route exact path="/payments/success/:id" render={(props) => (
-                  <PaymentSuccessPage {...props} />
-                )} />
-                <Route exact path="/payments/failure/:id" render={(props) => (
-                  <PaymentFailurePage {...props} />
+                <Route exact path="/payments/:result/:jwt" render={(props) => (
+                  <PaymentFinishedPage {...props} />
                 )} />
                 <Route exact path="/admin/gym" render={() => (
                   this.isAdmin() ? ( <AdminGymPage /> ) : ( <Redirect to="/" /> )

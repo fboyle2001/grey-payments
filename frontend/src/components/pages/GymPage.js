@@ -38,14 +38,17 @@ class GymPage extends React.Component {
       existing = await api.get("/gym");
     } catch (error) {
       if(error.response.status === 401) {
-        // User has been logged out
-        this.setState({ logout: true });
+        console.log("Handle this");
       }
       return;
     }
 
+    console.log(existing);
+    console.log(existing.data.hasMembership);
+
     if(!existing.data.hasMembership) {
       this.setState({ loaded: true, hasMembership: false });
+      return;
     }
 
     this.setState({ loaded: true, hasMembership: true, membership: existing.data.membership });

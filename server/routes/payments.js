@@ -4,14 +4,28 @@ const router = express.Router();
 const { User, GymMembership, Transaction, TransactionType } = require("../database.models.js");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET;
+const jwt = require("jsonwebtoken");
 
 // Called when a POST request is to be served at /api/payments/failure
 router.post("/failure", async (req, res) => {
-  const transactionId = req.body.transactionId;
+  const transactionJWT = req.body.transactionJWT;
 
-  if(transactionId == null) {
-    return res.status(400).json({ message: "Missing transaction ID" });
+  if(transactionJWT == null) {
+    return res.status(400).json({ message: "Missing transaction JWT" });
   }
+
+  // Now decrypt the JWT
+
+  let token;
+
+  try {
+    token = jwt.verify(transactionJWT, process.env.JWT_SECRET);
+  } catch (error) {
+    // Invalid key
+    return res.status(400).json({ message: "Transaction JWT has been modified or has expired" });
+  }
+
+  const { success, transactionId } = token;
 
   let transaction;
 
@@ -44,10 +58,28 @@ router.post("/failure", async (req, res) => {
 
 // Called when a POST request is to be served at /api/payments/success
 router.post("/success", async (req, res) => {
-  const transactionId = req.body.transactionId;
+  const transactionJWT = req.body.transactionJWT;
 
-  if(transactionId == null) {
-    return res.status(400).json({ message: "Missing transaction ID" });
+  if(transactionJWT == null) {
+    return res.status(400).json({ message: "Missing transaction JWT" });
+  }
+
+  // Now decrypt the JWT
+
+  let token;
+
+  try {
+    token = jwt.verify(transactionJWT, process.env.JWT_SECRET);
+  } catch (error) {
+    // Invalid key
+    console.log(error);
+    return res.status(400).json({ message: "Transaction JWT has been modified or has expired" });
+  }
+
+  const { success, transactionId } = token;
+
+  if(!success) {
+    return res.status(400).json({ message: "Failure token provided to success endpoint" });
   }
 
   let transaction;
