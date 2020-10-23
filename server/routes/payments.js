@@ -68,6 +68,19 @@ router.post("/success", async (req, res) => {
 
   switch(transaction.type) {
     case TransactionType.gymMembership:
+      let existingMembership;
+
+      try {
+        existingMembership = await GymMembership.findAll({ where: { userId: transaction.userId }});
+      } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Server error: Unable to check for existing membership "});
+      }
+
+      if(existingMembership.length !== 0) {
+        return res.status(400).json({ message: "User already has a membership" });
+      }
+
       let membership;
 
       try {

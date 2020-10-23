@@ -8,8 +8,13 @@ const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET;
 router.get("/", async (req, res) => {
   const { user } = req.session;
 
-  const existingEntries = await GymMembership.findAll({ where: { userId: user.id } });
-  return res.status(200).json({ existingEntries });
+  const membership = await GymMembership.findOne({ where: { userId: user.id } });
+
+  if(membership === null) {
+    return res.status(200).json({ hasMembership: false });
+  }
+
+  return res.status(200).json({ hasMembership: true, membership });
 });
 
 router.get("/all", async (req, res) => {

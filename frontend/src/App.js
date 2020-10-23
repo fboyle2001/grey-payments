@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
 import authContext from './utils/authContext.js';
 
 import NavigationBar from './components/nav/NavigationBar';
@@ -143,26 +143,29 @@ class App extends React.Component {
       <authContext.Provider value={this.state.user}>
         <Router>
           <div className="App">
+            <NavigationBar />
             <div>
-              <Route exact path="/" render={() => (
-                <NavigationBar />
-              )} />
-              <Route exact path="/payments/success/:id" render={(props) => (
-                <PaymentSuccessPage {...props} />
-              )} />
-              <Route exact path="/payments/failure/:id" render={(props) => (
-                <PaymentFailurePage {...props} />
-              )} />
-              <Route exact path="/admin/gym" render={() => (
-                this.isAdmin() ? ( <AdminGymPage /> ) : ( <Redirect to="/" /> )
-              )} />
-              <Route exact path="/login" render={() => (
-                this.isLoggedIn() ? ( <Redirect to="/" /> ) : ( <LoginPage loginUser={this.loginUser} /> )
-              )} />
-              <Route exact path="/logout" render={() => ( <LogoutPage logoutUser={this.logoutUser} /> )} />
-              <Route exact path="/gym" render={() => (
-                this.isLoggedIn() ? ( <GymPage /> ) : ( <Redirect to="/login" /> )
-              )} />
+              <Switch>
+                <Route exact path="/" render={() => (
+                  <h1>Homepage</h1>
+                )} />
+                <Route exact path="/payments/success/:id" render={(props) => (
+                  <PaymentSuccessPage {...props} />
+                )} />
+                <Route exact path="/payments/failure/:id" render={(props) => (
+                  <PaymentFailurePage {...props} />
+                )} />
+                <Route exact path="/admin/gym" render={() => (
+                  this.isAdmin() ? ( <AdminGymPage /> ) : ( <Redirect to="/" /> )
+                )} />
+                <Route exact path="/login" render={() => (
+                  this.isLoggedIn() ? ( <Redirect to="/" /> ) : ( <LoginPage loginUser={this.loginUser} /> )
+                )} />
+                <Route exact path="/logout" render={() => ( <LogoutPage logoutUser={this.logoutUser} /> )} />
+                <Route exact path="/gym" render={() => (
+                  this.isLoggedIn() ? ( <GymPage /> ) : ( <Redirect to="/login" /> )
+                )} />
+              </Switch>
             </div>
           </div>
         </Router>

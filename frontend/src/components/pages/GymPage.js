@@ -2,8 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import api from '../../utils/axiosConfig.js';
-import NavigationBar from '../nav/NavigationBar';
-import ExistingMembership from '../gym/ExistingMembership';
 import { Redirect } from 'react-router';
 import { loadStripe } from '@stripe/stripe-js';
 
@@ -13,12 +11,13 @@ class GymPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      logout: false,
-      existingMemberships: []
-    };
+      loaded: false,
+      hasMembership: false,
+      membership: {}
+    }
   }
 
-  purchaseOption = async (e) => {
+  purchaseMembership = async (e) => {
     const stripe = await stripePromise;
     const response = await api.post("/gym/create_stripe_checkout");
     const session = await response.data;
@@ -45,26 +44,40 @@ class GymPage extends React.Component {
       return;
     }
 
-    this.setState({ existingMemberships: existing.data.existingEntries });
+    if(!existing.data.hasMembership) {
+      this.setState({ loaded: true, hasMembership: false });
+    }
+
+    this.setState({ loaded: true, hasMembership: true, membership: existing.data.membership });
   }
 
   render () {
-    if(this.state.logout) {
+    if(!this.state.loaded) {
       return (
-        <Redirect to="/logout" />
+        <React.Fragment>
+          <h1>Loading...</h1>
+        </React.Fragment>
       );
+    }
+
+    if(!this.state.hasMembership) {
+      return (
+        <React.Fragment>
+          <h1>Purchase Gym Membership</h1>
+          <p>Add some stuff about the membership here...</p>
+          <button role="link" onClick={this.purchaseMembership}>
+            Purchase Gym Membership
+          </button>
+        </React.Fragment>
+      )
     }
 
     return (
       <React.Fragment>
-        <NavigationBar />
-        <h1>Purchase Gym Membership</h1>
-        <ExistingMembership
-          existingMemberships={this.state.existingMemberships}
-        />
-        <button role="link" onClick={this.purchaseOption}>
-          Purchase Gym Membership
-        </button>
+        <h1>View Gym Membership</h1>
+        <p>You already have a membership</p>
+        <p>Purchased at {this.state.membership.createdAt}</p>
+        <p>Approved: {this.state.membership.approved ? "Yes" : "No"}</p>
       </React.Fragment>
     )
   }
