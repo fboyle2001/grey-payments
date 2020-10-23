@@ -57,9 +57,23 @@ router.post("/login", async (req, res) => {
   }
 
   if(user == null) {
+    let details;
+
+    try {
+      details = await axios.get(`https://community.dur.ac.uk/grey.jcr/itsuserdetailsjson.php?username=${username}`);
+    } catch (error) {
+      return res.status(500).json({ message: "Unable to fetch details about this user from the university" });
+    }
+
+    const { email, surname, firstnames, studyyear, college } = details.data;
+
+    if(college.toLowerCase() !== "grey college") {
+      return res.status(403).json({ message: "You must be a member of Grey College to access this website" });
+    }
+
     try {
       // Create a new user record
-      user = await User.create({ username });
+      user = await User.create({ username, email, surname, firstNames: firstnames, year: studyyear, email });
     } catch (error) {
       return res.status(500).json({ message: "Server error: Unable to create a new user. Database error." });
     }

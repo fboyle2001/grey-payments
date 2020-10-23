@@ -1,3 +1,4 @@
+'database.models.js'
 // Get the exported classes from the sequelize module in node.js
 const { Sequelize, Model, DataTypes } = require("sequelize");
 
@@ -27,6 +28,18 @@ User.init({
   admin: {
     type: DataTypes.BOOLEAN,
     defaultValue: false
+  },
+  email: {
+    type: DataTypes.STRING
+  },
+  surname: {
+    type: DataTypes.STRING
+  },
+  firstNames: {
+    type: DataTypes.STRING
+  },
+  year: {
+    type: DataTypes.INTEGER
   }
 }, { sequelize });
 
