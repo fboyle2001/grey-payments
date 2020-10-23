@@ -1,8 +1,6 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import api from '../../utils/axiosConfig.js';
-import { Redirect } from 'react-router';
 import { loadStripe } from '@stripe/stripe-js';
 
 const stripePromise = loadStripe("pk_test_51HHsHPKDASE1Hc3S7z0DxdBmHEFhyCxUW0gItUyjdpngmvJlrApgVMw8bEBFRpz3KhbMzMMyPQTzNN8650IGIQo3003jB4idHf");

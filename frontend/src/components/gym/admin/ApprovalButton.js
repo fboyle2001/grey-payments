@@ -17,10 +17,8 @@ class ApprovalButton extends React.Component {
   approveMembership = async () => {
     this.setState({ disabled: true });
 
-    let approval;
-
     try {
-      approval = await api.post("/gym/approve", { id: this.props.id });
+      await api.post("/gym/approve", { id: this.props.id });
     } catch (error) {
       this.setState({ status: error.response.status, message: error.response.data.message, queried: true });
       return;
@@ -56,5 +54,9 @@ class ApprovalButton extends React.Component {
     );
   }
 }
+
+ApprovalButton.propTypes = {
+  approved: PropTypes.bool.isRequired
+};
 
 export default ApprovalButton;
