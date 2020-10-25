@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 class NavigationBarItem extends React.Component {
   render () {
     return (
-      <Link to={this.props.url}><li className="mainNavigationElement">{this.props.title}</li></Link>
+      <Link to={this.props.url}><li>{this.props.title}</li></Link>
     );
   }
 }

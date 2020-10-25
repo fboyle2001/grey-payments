@@ -31,8 +31,7 @@ class App extends React.Component {
     }
 
     this.state = {
-      user,
-      forceLogout: false
+      user
     };
   }
 
@@ -113,32 +112,13 @@ class App extends React.Component {
     this.setState({ user: null });
   }
 
-  forceLogout = () => {
-    this.setState({ forceLogout: true });
-    this.logoutUser();
-  }
-
   componentDidMount = () => {
-    if(this.state.user !== null) {
-      if(!this.isLoggedIn()) {
-        // This is to make things consistent with the server
-        // essentially acts as a reset if the user modifies their state heavily
-        this.forceLogout();
-      }
+    if(!this.isLoggedIn() && this.state.user !== null) {
+      this.logoutUser();
     }
   }
 
   render () {
-    if(this.state.forceLogout) {
-      return (
-        <authContext.Provider value={this.state.user}>
-          <Router>
-            <Redirect to="/logout" />
-          </Router>
-        </authContext.Provider>
-      );
-    }
-
     return (
       <authContext.Provider value={this.state.user}>
         <Router>
