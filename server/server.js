@@ -13,6 +13,9 @@ const authRoute = require("./routes/auth");
 const gymRoute = require("./routes/gym");
 const paymentsRoute = require("./routes/payments");
 
+// Required to deploy the static React files for production
+const path = require("path");
+
 // Load express
 const app = express();
 
@@ -55,8 +58,6 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/api/auth", authRoute);
-
 // Middleware to check if the user is logged in
 const isLoggedIn = (req, res, next) => {
   // They are logged in if they have a valid cookie and the session recognises them
@@ -68,9 +69,22 @@ const isLoggedIn = (req, res, next) => {
   return;
 };
 
+// These are api routes that act as the backend
+app.use("/api/auth", authRoute);
 app.use("/api/gym", isLoggedIn, gymRoute);
-
 app.use("/api/payments", paymentsRoute);
+
+// Uncomment /* */ when deploying
+// These are for serving production code
+// The directory may need to change
+/* app.use(express.static(path.join(__dirname, "../frontend/build"))); */
+// Necessary since things like /gym do not actually exist they are routes
+// within the index.html file
+/*
+app.get('/*', function (req, res) {
+  res.sendFile(path.join(__dirname, "../frontend/build", "index.html"));
+});
+*/
 
 // Listen for requests on the port specified in the .env file
 app.listen(process.env.EXPRESS_PORT, () => console.log(`Server started on ${process.env.EXPRESS_PORT}`));

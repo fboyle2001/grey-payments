@@ -35,7 +35,6 @@ router.get("/all", async (req, res) => {
       ]
     });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({ message: "Server error: Unable to query database for memberships" });
   }
 
@@ -124,9 +123,6 @@ router.post("/create_stripe_checkout", async (req, res) => {
     algorithm: "HS256",
     expiresIn: jwtExpiry
   });
-
-  console.log("success", successJWT);
-  console.log("failure", failureJWT);
 
   // Connects to Stripe to generate the checkout page
   const session = await stripe.checkout.sessions.create({
