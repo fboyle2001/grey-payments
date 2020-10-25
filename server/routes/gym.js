@@ -130,7 +130,7 @@ router.post("/create_stripe_checkout", async (req, res) => {
 
   // Connects to Stripe to generate the checkout page
   const session = await stripe.checkout.sessions.create({
-    customer_email: `${user.username}@durham.ac.uk`,
+    customer_email: user.email,
     payment_method_types: ["card"],
     line_items: [
       {

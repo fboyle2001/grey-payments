@@ -133,14 +133,14 @@ class App extends React.Component {
                   <PaymentFinishedPage {...props} />
                 )} />
                 <Route exact path="/admin/gym" render={() => (
-                  this.isAdmin() ? ( <AdminGymPage /> ) : ( <Redirect to="/" /> )
+                  this.isAdmin() ? ( <AdminGymPage /> ) : ( <Redirect to="/errors/403" /> )
                 )} />
                 <Route exact path="/accounts/login" render={() => (
                   this.isLoggedIn() ? ( <Redirect to="/" /> ) : ( <LoginPage loginUser={this.loginUser} /> )
                 )} />
                 <Route exact path="/accounts/logout" render={() => ( <LogoutPage logoutUser={this.logoutUser} /> )} />
                 <Route exact path="/gym" render={() => (
-                  this.isLoggedIn() ? ( <GymPage /> ) : ( <Redirect to="/login" /> )
+                  this.isLoggedIn() ? ( <GymPage /> ) : ( <Redirect to="/accounts/login" /> )
                 )} />
                 <Route exact path="/errors/:code" render={(props) => (
                   <ErrorPage {...props} />
